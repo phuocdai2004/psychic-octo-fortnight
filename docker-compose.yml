@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - SESSION_SECRET=${SESSION_SECRET:-my-secret-key-change-in-production}
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3000
+    restart: unless-stopped

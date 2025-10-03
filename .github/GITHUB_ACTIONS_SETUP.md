@@ -36,16 +36,6 @@ You need to configure the following secrets in your GitHub repository:
    - The `srv-XXXXXXXXXXXXX` part is your Service ID
    - Copy and save as GitHub secret
 
-### Optional Secrets (for Docker Hub):
-
-5. **DOCKER_USERNAME** (Optional)
-   - Your Docker Hub username
-   - Only needed if you want to push images to Docker Hub
-
-6. **DOCKER_PASSWORD** (Optional)
-   - Your Docker Hub password or access token
-   - Only needed if you want to push images to Docker Hub
-
 ## 📋 Workflows Included
 
 ### 1. `ci-cd.yml` - Main CI/CD Pipeline
@@ -56,13 +46,13 @@ You need to configure the following secrets in your GitHub repository:
 - 🐳 **Build**: Builds and tests Docker image
 - 🚀 **Deploy**: Triggers deployment on Render (only on main/master)
 
-### 2. `docker-build.yml` - Docker Build and Push
+### 2. `docker-build.yml` - Docker Build and Validate
 **Triggers:** Push to main/master, version tags
 
 **Jobs:**
-- 🐳 Builds Docker image with metadata
-- 📦 Pushes to Docker Hub (optional)
-- 🏷️ Tags with version, branch, and commit SHA
+- 🐳 Builds Docker image with caching
+- ✅ Validates Docker build succeeds
+- 🏷️ Tags with commit SHA for tracking
 
 ## 🚀 How It Works
 

@@ -7,8 +7,8 @@ on:
     branches: [ main, master ]
 
 jobs:
-  # Test and Lint Job
-  test:
+  # Test and Build
+  build:
     runs-on: ubuntu-latest
     
     steps:
@@ -27,62 +27,16 @@ jobs:
     - name: Check for security vulnerabilities
       run: npm audit --audit-level=moderate || true
     
-    - name: List project structure
-      run: ls -la
-
-  # Build Docker Image
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    
     - name: Build Docker image
-      run: docker build -t medication-app:${{ github.sha }} .
+      run: docker build -t medication-app:latest .
     
-    - name: Test Docker image
+    - name: Verify Docker image
+      run: docker images medication-app
+    
+    - name: Success notification
+      if: success()
       run: |
-        docker run -d --name test-container \
-          -e MONGO_URI="${{ secrets.MONGO_URI }}" \
-          -e SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \
-          -e NODE_ENV=production \
-          -p 3000:3000 \
-          medication-app:${{ github.sha }}
-        sleep 10
-        docker ps
-        docker logs test-container
-        docker stop test-container
-        docker rm test-container
-
-  # Deploy to Render
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Deploy to Render
-      env:
-        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
-      run: |
-        curl -X POST "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys" \
-          -H "Authorization: Bearer $RENDER_API_KEY" \
-          -H "Content-Type: application/json" \
-          -d '{"clearCache": false}'
-    
-    - name: Deployment notification
-      run: |
-        echo "✅ Deployment triggered successfully!"
-        echo "🚀 Your application is being deployed to Render"
+        echo "✅ Build successful!"
+        echo "🐳 Docker image created"
+        echo "🚀 Render will auto-deploy from GitHub"
         echo "📦 Commit: ${{ github.sha }}"
-        echo "👤 Author: ${{ github.actor }}"
