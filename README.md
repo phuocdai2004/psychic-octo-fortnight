@@ -100,7 +100,7 @@ http://localhost:3000
 ## Environment Variables
 
 ```env
-MONGO_URI=mongodb+srv://midclonic:phuocdai2004@midclinic.iqgne7s.mongodb.net/medclinic?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://midclonic:<hcvshcv>@midclinic.iqgne7s.mongodb.net/medclinic?retryWrites=true&w=majority
 SESSION_SECRET=generate-random-string
 NODE_ENV=production
 PORT=3000
