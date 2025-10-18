@@ -14,7 +14,7 @@ pipeline {
                 checkout([$class: 'GitSCM',
                   branches: [[name: '*/master']],
                   userRemoteConfigs: [[
-                    url: 'https://github.com/XT-xuantruong/learnking.server.git',
+                    url: 'https://github.com/phuocdai2004/psychic-octo-fortnight.git',
                     credentialsId: 'github-pat'
                   ]]
                 ])
