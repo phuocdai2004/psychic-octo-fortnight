@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM',
-                  branches: [[name: '*/master']],
+                  branches: [[name: '*/main']],
                   userRemoteConfigs: [[
                     url: 'https://github.com/phuocdai2004/psychic-octo-fortnight.git',
                     credentialsId: 'github-pat'
