@@ -44,8 +44,8 @@ pipeline {
                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred',
                     usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push docker.io/$DOCKER_USER/$IMAGE_NAME:latest"
+                    bat "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    bat"docker push docker.io/$DOCKER_USER/$IMAGE_NAME:latest"
                 }
             }
         }
@@ -59,7 +59,7 @@ pipeline {
                     file(credentialsId: 'docker-compose-file', variable: 'DOCKER_COMPOSE_PATH')
                 ]) {
                     sshagent (credentials: ['server-ssh-key']) {
-                        sh '''
+                        bat '''
                         # Copy docker-compose.yml từ Jenkins sang server
                         scp -o StrictHostKeyChecking=no $DOCKER_COMPOSE_PATH $SERVER_USER@$SERVER_HOST:~/project/docker-compose.yml
 
