@@ -39,18 +39,18 @@ pipeline {
             }
         }
         stage('Push Docker Hub') {
-        steps {
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-cred',
-                usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                
-                // Login Docker Hub trên Windows
-                bat 'docker login -u daidev2412 -p Access Token'
-                
-                // Push image
-                bat 'docker push docker.io/daidev2412/phuocdai:latest'
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred',
+                    usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    
+                    // Login Docker Hub bằng --password-stdin (an toàn)
+                    bat """
+                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        docker push docker.io/%DOCKER_USER%/${IMAGE_NAME}:latest
+                    """
+                }
             }
         }
-    }
 
 
 
