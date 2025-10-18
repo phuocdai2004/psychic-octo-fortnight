@@ -34,7 +34,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred',
                     usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     
-                    sh "docker build -t docker.io/$DOCKER_USER/$IMAGE_NAME:latest ."
+                    bat "docker build -t docker.io/$DOCKER_USER/$IMAGE_NAME:latest ."
                 }
             }
         }
