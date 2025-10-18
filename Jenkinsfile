@@ -44,7 +44,7 @@ pipeline {
                 usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                 
                 // Login Docker Hub trên Windows
-                bat 'docker login -u daidev2412 -p phuocdai'
+                bat 'docker login -u daidev2412 -p Access Token'
                 
                 // Push image
                 bat 'docker push docker.io/daidev2412/phuocdai:latest'
