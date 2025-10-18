@@ -58,33 +58,11 @@ pipeline {
 
 
 
-        stage('Deploy Server') {
-            steps {
-                withCredentials([
-                    usernamePassword(credentialsId: 'dockerhub-cred',
-                        usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS'),
-                    string(credentialsId: 'db-conn', variable: 'DB_CONN'),
-                    file(credentialsId: 'docker-compose-file', variable: 'DOCKER_COMPOSE_PATH')
-                ]) {
-                    sshagent (credentials: ['server-ssh-key']) {
-                        bat '''
-                        # Copy docker-compose.yml từ Jenkins sang server
-                        scp -o StrictHostKeyChecking=no $DOCKER_COMPOSE_PATH $SERVER_USER@$SERVER_HOST:~/project/docker-compose.yml
-
-                        # SSH vào server để deploy
-                        ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST "
-                        cd ~/project && \
-                        echo \\"DB_CONNECTION_STRING=$DB_CONN\\" > .env && \
-                        echo \\"$DOCKER_PASS\\" | docker login -u $DOCKER_USER --password-stdin && \
-                        docker compose --env-file .env pull && \
-                        docker compose --env-file .env down && \
-                        docker compose --env-file .env up -d && \
-                        docker image prune -f
-                        "
-                        '''
-                    }
-                }
-            }
-        }
+        // stage('Deploy Server') {
+        //     steps {
+        //         echo 'Deployment skipped - Using Render auto-deploy'
+        //         echo 'Docker image is available at: docker.io/phuocdai2004/server-lms-net:latest'
+        //     }
+        // }
     }
 }
