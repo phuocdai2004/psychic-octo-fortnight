@@ -4,7 +4,7 @@
 # Dependencies (installed separately in container)
 node_modules
 npm-debug.log
-package-lock.json
+# NOTE: package-lock.json is INCLUDED for npm ci to work
 
 # Environment files (set in Render dashboard)
 .env
