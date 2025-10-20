@@ -21,7 +21,63 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  // Profile fields
+  fullName: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  phone: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  dateOfBirth: {
+    type: Date,
+    default: null
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other', ''],
+    default: ''
+  },
+  address: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  avatar: {
+    type: String,
+    default: ''
+  },
+  avatarPublicId: {
+    type: String,
+    default: ''
+  },
+  // Role-based access control
+  role: {
+    type: String,
+    enum: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'DOCTOR', 'STAFF', 'PATIENT'],
+    default: 'PATIENT'
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  // Password reset
+  resetPasswordOTP: {
+    type: String,
+    default: null
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null
+  },
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }
@@ -38,6 +94,12 @@ userSchema.pre('save', async function(next) {
   } catch (error) {
     next(error);
   }
+});
+
+// Update the updatedAt timestamp before saving
+userSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
 });
 
 // Method to compare passwords

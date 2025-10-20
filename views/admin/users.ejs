@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management - MedClinic</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: #667eea;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .nav-links {
+      background: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .nav-links a {
+      color: #667eea;
+      text-decoration: none;
+      margin-right: 20px;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .filters form {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .filters input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .filters button {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .filters button:hover {
+      background: #5568d3;
+    }
+
+    .users-table {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f8f9fa;
+      padding: 15px;
+      text-align: left;
+      font-weight: bold;
+      color: #333;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .role-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .role-super-admin { background: #dc3545; color: white; }
+    .role-admin { background: #ffc107; color: #333; }
+    .role-manager { background: #17a2b8; color: white; }
+    .role-doctor { background: #28a745; color: white; }
+    .role-staff { background: #6c757d; color: white; }
+    .role-patient { background: #007bff; color: white; }
+
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .status-active { background: #d4edda; color: #155724; }
+    .status-inactive { background: #f8d7da; color: #721c24; }
+
+    .action-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    .btn-view {
+      background: #007bff;
+      color: white;
+    }
+
+    .btn-edit {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.8;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .pagination a,
+    .pagination span {
+      padding: 10px 15px;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .pagination .active {
+      background: #667eea;
+      color: white;
+    }
+
+    .pagination a:hover {
+      background: #5568d3;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .users-table {
+        padding: 15px;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>👥 User Management</h1>
+    </div>
+
+    <div class="nav-links">
+      <a href="/admin/dashboard">📊 Dashboard</a>
+      <a href="/admin/users">👥 User Management</a>
+      <a href="/medications">💊 Medications</a>
+      <a href="/profile">👤 Profile</a>
+      <a href="/logout">🚪 Logout</a>
+    </div>
+
+    <div class="filters">
+      <form method="GET" action="/admin/users">
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Search by username, email, or name..." 
+          value="<%= searchQuery %>"
+        >
+        
+        <select name="role">
+          <option value="">All Roles</option>
+          <% Object.values(roles).forEach(role => { %>
+            <option value="<%= role %>" <%= roleFilter === role ? 'selected' : '' %>>
+              <%= roleDescriptions[role].name %>
+            </option>
+          <% }); %>
+        </select>
+        
+        <select name="status">
+          <option value="">All Status</option>
+          <option value="active" <%= statusFilter === 'active' ? 'selected' : '' %>>Active</option>
+          <option value="inactive" <%= statusFilter === 'inactive' ? 'selected' : '' %>>Inactive</option>
+        </select>
+        
+        <button type="submit">🔍 Search</button>
+      </form>
+    </div>
+
+    <div class="users-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (users.length === 0) { %>
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                No users found
+              </td>
+            </tr>
+          <% } else { %>
+            <% users.forEach(user => { %>
+              <tr>
+                <td><strong><%= user.username %></strong></td>
+                <td><%= user.email %></td>
+                <td><%= user.fullName || '-' %></td>
+                <td>
+                  <span class="role-badge role-<%= user.role.toLowerCase().replace('_', '-') %>">
+                    <%= roleDescriptions[user.role].name %>
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge <%= user.isActive ? 'status-active' : 'status-inactive' %>">
+                    <%= user.isActive ? 'Active' : 'Inactive' %>
+                  </span>
+                </td>
+                <td><%= new Date(user.createdAt).toLocaleDateString('vi-VN') %></td>
+                <td>
+                  <div class="action-btns">
+                    <a href="/admin/users/<%= user._id %>" class="btn btn-view">View</a>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } %>
+        </tbody>
+      </table>
+
+      <% if (totalPages > 1) { %>
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>&search=<%= searchQuery %>&role=<%= roleFilter %>&status=<%= statusFilter %>">
+              ← Previous
+            </a>
+          <% } %>
+
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <% if (i === currentPage) { %>
+              <span class="active"><%= i %></span>
+            <% } else if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) { %>
+              <a href="?page=<%= i %>&search=<%= searchQuery %>&role=<%= roleFilter %>&status=<%= statusFilter %>">
+                <%= i %>
+              </a>
+            <% } else if (i === currentPage - 3 || i === currentPage + 3) { %>
+              <span>...</span>
+            <% } %>
+          <% } %>
+
+          <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>&search=<%= searchQuery %>&role=<%= roleFilter %>&status=<%= statusFilter %>">
+              Next →
+            </a>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</body>
+</html>

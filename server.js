@@ -1,22 +1,30 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const methodOverride = require('method-override');
 const connectDB = require('./config/database');
-const authRoutes = require('./routes/auth');
-const medicationRoutes = require('./routes/medications');
+const apiRoutes = require('./routes/api');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB
 connectDB();
 
+// CORS configuration for React frontend
+const corsOrigin = process.env.NODE_ENV === 'production' 
+  ? process.env.CORS_ORIGIN || 'http://localhost'
+  : 'http://localhost:3000';
+
+app.use(cors({
+  origin: corsOrigin,
+  credentials: true // Allow cookies
+}));
+
 // Middleware
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(methodOverride('_method'));
+app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
 app.use(session({
@@ -30,24 +38,13 @@ app.use(session({
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' // true in production
+    secure: process.env.NODE_ENV === 'production', // true in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Allow cross-site for React
   }
 }));
 
-// Set view engine
-app.set('view engine', 'ejs');
-
-// Routes
-app.get('/', (req, res) => {
-  if (req.session.userId) {
-    res.redirect('/medications');
-  } else {
-    res.redirect('/login');
-  }
-});
-
-app.use('/', authRoutes);
-app.use('/medications', medicationRoutes);
+// API routes (for React frontend)
+app.use('/api', apiRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -158,6 +158,10 @@
       <div class="user-info">
         <span class="username">Welcome, <%= username %>!</span>
         <a href="/medications/new" class="btn btn-primary">+ Add Medication</a>
+        <a href="/profile" class="btn btn-primary">👤 Profile</a>
+        <% if (locals.userRole === 'ADMIN' || locals.userRole === 'SUPER_ADMIN') { %>
+          <a href="/admin/dashboard" class="btn btn-primary">⚙️ Admin</a>
+        <% } %>
         <a href="/logout" class="btn btn-secondary">Logout</a>
       </div>
     </nav>

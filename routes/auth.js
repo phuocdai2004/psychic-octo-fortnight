@@ -48,7 +48,9 @@ router.post('/register', isGuest, async (req, res) => {
 
 // Show login page
 router.get('/login', isGuest, (req, res) => {
-  res.render('login', { error: null });
+  const successMessage = req.session.successMessage;
+  delete req.session.successMessage; // Clear the message after displaying
+  res.render('login', { error: null, successMessage: successMessage || null });
 });
 
 // Handle login
@@ -58,19 +60,19 @@ router.post('/login', isGuest, async (req, res) => {
 
     // Validation
     if (!username || !password) {
-      return res.render('login', { error: 'Please provide username and password' });
+      return res.render('login', { error: 'Please provide username and password', successMessage: null });
     }
 
     // Find user
     const user = await User.findOne({ username });
     if (!user) {
-      return res.render('login', { error: 'Invalid username or password' });
+      return res.render('login', { error: 'Invalid username or password', successMessage: null });
     }
 
     // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.render('login', { error: 'Invalid username or password' });
+      return res.render('login', { error: 'Invalid username or password', successMessage: null });
     }
 
     // Create session
@@ -79,7 +81,7 @@ router.post('/login', isGuest, async (req, res) => {
     res.redirect('/medications');
   } catch (error) {
     console.error('Login error:', error);
-    res.render('login', { error: 'Login failed. Please try again.' });
+    res.render('login', { error: 'Login failed. Please try again.', successMessage: null });
   }
 });
 

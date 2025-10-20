@@ -1,7 +1,15 @@
+# .dockerignore for Backend (root)
 node_modules
 npm-debug.log
 .env
+.env.local
 .git
 .gitignore
 .DS_Store
 *.log
+.vscode
+frontend
+*.md
+Dockerfile
+docker-compose.yml
+views

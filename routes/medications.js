@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Medication = require('../models/Medication');
 const { isAuthenticated } = require('../middleware/auth');
+const { isOwnerOrHigher, requireRole, PERMISSIONS } = require('../middleware/rbac');
 
 // All routes require authentication
 router.use(isAuthenticated);
@@ -9,7 +10,17 @@ router.use(isAuthenticated);
 // List all medications for the logged-in user
 router.get('/', async (req, res) => {
   try {
-    const medications = await Medication.find({ userId: req.session.userId }).sort({ createdAt: -1 });
+    const userRole = req.userRole;
+    
+    let medications;
+    // Doctors and staff can see all medications
+    if (userRole === 'DOCTOR' || userRole === 'STAFF' || userRole === 'ADMIN' || userRole === 'SUPER_ADMIN' || userRole === 'MANAGER') {
+      medications = await Medication.find().sort({ createdAt: -1 });
+    } else {
+      // Patients only see their own
+      medications = await Medication.find({ userId: req.session.userId }).sort({ createdAt: -1 });
+    }
+    
     res.render('medications/index', { 
       medications, 
       username: req.session.username 
@@ -28,8 +39,8 @@ router.get('/new', (req, res) => {
   });
 });
 
-// Create new medication
-router.post('/', async (req, res) => {
+// Create new medication (Only doctors can prescribe)
+router.post('/', requireRole(PERMISSIONS.MEDICATION.PRESCRIBE), async (req, res) => {
   try {
     const { name, dosage, description, quantity, manufacturer, expiryDate } = req.body;
 
@@ -125,23 +136,26 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete medication
-router.delete('/:id', async (req, res) => {
-  try {
-    const medication = await Medication.findOneAndDelete({ 
-      _id: req.params.id, 
-      userId: req.session.userId 
-    });
+// Delete medication (Owner or Admin+ can delete)
+router.delete('/:id',
+  isOwnerOrHigher(async (req) => {
+    const med = await Medication.findById(req.params.id);
+    return med?.userId;
+  }),
+  async (req, res) => {
+    try {
+      const medication = await Medication.findByIdAndDelete(req.params.id);
 
-    if (!medication) {
-      return res.status(404).send('Medication not found');
+      if (!medication) {
+        return res.status(404).send('Medication not found');
+      }
+
+      res.redirect('/medications');
+    } catch (error) {
+      console.error('Error deleting medication:', error);
+      res.status(500).send('Error deleting medication');
     }
-
-    res.redirect('/medications');
-  } catch (error) {
-    console.error('Error deleting medication:', error);
-    res.status(500).send('Error deleting medication');
   }
-});
+);
 
 module.exports = router;

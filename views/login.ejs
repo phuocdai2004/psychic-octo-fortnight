@@ -105,6 +105,15 @@
     .link a:hover {
       text-decoration: underline;
     }
+    
+    .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 10px 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #c3e6cb;
+    }
   </style>
 </head>
 <body>
@@ -114,6 +123,10 @@
     
     <% if (error) { %>
       <div class="error"><%= error %></div>
+    <% } %>
+    
+    <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+      <div class="success"><%= successMessage %></div>
     <% } %>
     
     <form action="/login" method="POST">
@@ -129,6 +142,10 @@
       
       <button type="submit" class="btn">Login</button>
     </form>
+    
+    <div class="link" style="margin-top: 15px;">
+      <a href="/forgot-password">Forgot your password?</a>
+    </div>
     
     <div class="link">
       Don't have an account? <a href="/register">Register here</a>
