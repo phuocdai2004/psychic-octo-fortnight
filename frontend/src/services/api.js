@@ -1,8 +1,10 @@
 import axios from 'axios';
 
 // Create axios instance
+// In production (Render), use environment variable for backend URL
+// In development, use relative path (proxy will forward)
 const api = axios.create({
-  baseURL: '/api', // Use relative path - proxy will forward to backend
+  baseURL: process.env.REACT_APP_API_URL || '/api',
   withCredentials: true, // Send cookies with requests
   headers: {
     'Content-Type': 'application/json'
